@@ -1,0 +1,119 @@
+#include <stdio.h>
+#include <stdlib.h>
+// 二叉树节点结构
+struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+};
+// 创建新节点
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+// 插入节点
+struct Node* insertNode(struct Node* root, int data) {
+    if (root == NULL) {
+        return createNode(data);
+    }
+    if (data < root->data) {
+        root->left = insertNode(root->left, data);
+    } else if (data > root->data) {
+        root->right = insertNode(root->right, data);
+    }
+    return root;
+}
+// 查找节点
+struct Node* searchNode(struct Node* root, int data) {
+    if (root == NULL || root->data == data) {
+        return root;
+    }
+    if (data < root->data) {
+        return searchNode(root->left, data);
+    }
+    return searchNode(root->right, data);
+}
+// 找到右子树中的最小节点
+struct Node* findMinNode(struct Node* node) {
+    struct Node* current = node;
+    while (current->left != NULL) {
+        current = current->left;
+    }
+    return current;
+}
+// 删除节点
+struct Node* deleteNode(struct Node* root, int data) {
+    if (root == NULL) {
+        return root;
+    }
+    if (data < root->data) {
+        root->left = deleteNode(root->left, data);
+    } else if (data > root->data) {
+        root->right = deleteNode(root->right, data);
+    } else {
+        // 当前节点为要删除的节点
+        // 情况1：没有子节点或只有一个子节点
+        if (root->left == NULL) {
+            struct Node* temp = root->right;
+            free(root);
+            return temp;
+        } else if (root->right == NULL) {
+            struct Node* temp = root->left;
+            free(root);
+            return temp;
+        }
+        // 情况2：有两个子节点
+        struct Node* temp = findMinNode(root->right);
+        root->data = temp->data;
+        root->right = deleteNode(root->right, temp->data);
+    }
+    return root;
+}
+// 中序遍历打印节点
+void inOrderTraversal(struct Node* root) {
+    if (root != NULL) {
+        inOrderTraversal(root->left);
+        printf("%d ", root->data);
+        inOrderTraversal(root->right);
+    }
+}
+// int main() {
+    // struct Node* root = NULL;
+    
+    //插入节点
+    // root = insertNode(root, 50);
+    // root = insertNode(root, 30);
+    // root = insertNode(root, 20);
+    // root = insertNode(root, 40);
+    // root = insertNode(root, 70);
+    // root = insertNode(root, 60);
+    // root = insertNode(root, 80);
+    //打印初始二叉搜索树
+    // printf("初始二叉搜索树：\n");
+    // inOrderTraversal(root);
+    // printf("\n");
+   // 查找节点
+    // int searchValue = 40;
+    // struct Node* node = searchNode(root, searchValue);
+    // if (node != NULL) {
+        // printf("找到节点 %d\n", searchValue);
+    // } else {
+        // printf("未找到节点 %d\n", searchValue);
+    // }
+    //插入节点
+    // int insertValue = 35;
+    // root = insertNode(root, insertValue);
+    // printf("插入节点 %d 后的二叉搜索树：\n", insertValue);
+    // inOrderTraversal(root);
+    // printf("\n");
+   // 删除节点
+    // int deleteValue = 30;
+    // root = deleteNode(root, deleteValue);
+    // printf("删除节点 %d 后的二叉搜索树：\n", deleteValue);
+    // inOrderTraversal(root);
+    // printf("\n");
+    // return 0;
+// }
