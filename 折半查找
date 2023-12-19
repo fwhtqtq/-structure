@@ -1,0 +1,26 @@
+#include <stdio.h>
+int binarySearch(int arr[], int low, int high, int key) {
+    while (low <= high) {                    // 使用while循环进行迭代查找
+        int mid = low + (high - low) / 2;    // 计算中间位置
+        if (arr[mid] == key) {               // 如果中间位置的元素等于目标元素
+            return mid;                      // 返回中间位置，表示找到目标元素
+        } else if (arr[mid] < key) {          // 如果中间位置的元素小于目标元素
+            low = mid + 1;                   // 缩小查找范围，将low指针移到mid的右侧
+        } else {                             // 如果中间位置的元素大于目标元素
+            high = mid - 1;                  // 缩小查找范围，将high指针移到mid的左侧
+        }
+    }
+    return -1;                               // 循环结束后仍未找到目标元素，返回-1表示找不到
+}
+// int main() {
+    // int arr[] = {2, 5, 8, 10, 13, 21};       // 示例有序数组
+    // int n = sizeof(arr) / sizeof(arr[0]);    // 计算数组长度
+    // int key = 10;                            // 要查找的目标元素
+    // int index = binarySearch(arr, 0, n-1, key); // 调用折半查找函数进行查找
+    // if (index != -1) {
+        // printf("元素 %d 在数组中的位置是 %d\n", key, index); // 找到了目标元素，输出其位置
+    // } else {
+        // printf("数组中找不到元素 %d\n", key);               // 未找到目标元素的情况
+    // }
+    // return 0;
+// }
