@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <stdlib.h>
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+typedef struct Stack {
+    Node* top;
+} Stack;
+// 初始化栈
+void initStack(Stack* stack) {
+    stack->top = NULL;
+}
+// 判断栈是否为空
+int isEmpty(Stack* stack) {
+    return stack->top == NULL;
+}
+// 入栈
+void push(Stack* stack, int value) {
+    Node* newNode = (Node*) malloc(sizeof(Node));
+    newNode->data = value;
+    newNode->next = stack->top;
+    stack->top = newNode;
+}
+// 出栈
+int pop(Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Stack is empty. Cannot pop element.\n");
+        return -1;
+    }
+    int value = stack->top->data;
+    Node* temp = stack->top;
+    stack->top = stack->top->next;
+    free(temp);
+    return value;
+}
+// 获取栈顶元素
+int peek(Stack* stack) {
+    if (isEmpty(stack)) {
+        printf("Stack is empty. Cannot peek element.\n");
+        return -1;
+    }
+    return stack->top->data;
+}
+// 释放栈
+void freeStack(Stack* stack) {
+    Node* curr = stack->top;
+    while (curr != NULL) {
+        Node* temp = curr;
+        curr = curr->next;
+        free(temp);
+    }
+    stack->top = NULL;
+}
+// int main() {
+    // Stack stack;
+    // initStack(&stack);
+    // push(&stack, 1);
+    // push(&stack, 2);
+    // push(&stack, 3);
+    // printf("Top element: %d\n", peek(&stack));
+    // printf("Pop element: %d\n", pop(&stack));
+    // printf("Pop element: %d\n", pop(&stack));
+    // printf("Top element: %d\n", peek(&stack));
+    // freeStack(&stack);
+    // return 0;
+// }
