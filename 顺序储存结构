@@ -1,0 +1,95 @@
+#include <stdio.h>
+#define MAX_SIZE 50
+// 定义线性表结构
+typedef struct {
+    int data[MAX_SIZE];  // 存储元素的数组
+    int length;          // 线性表的长度
+} SeqList;
+// 初始化线性表
+void init(SeqList* list) {
+    list->length = 0;
+}
+// 向线性表插入元素
+int insert(SeqList* list, int pos, int value) {
+    // 判断插入位置是否有效
+    if (pos < 0 || pos > list->length || list->length >= MAX_SIZE) {
+        return -1;  // 插入失败
+    }
+    
+    // 将插入位置之后的元素后移
+    for (int i = list->length - 1; i >= pos; i--) {
+        list->data[i + 1] = list->data[i];
+    }
+    // 插入新元素
+    list->data[pos] = value;
+    list->length++;
+    return 0;  // 插入成功
+}
+// 删除线性表中的元素
+int delete1(SeqList* list, int pos, int* value) {
+    // 判断删除位置是否有效
+    if (pos < 0 || pos >= list->length) {
+        return -1;  // 删除失败
+    }
+    // 获取要删除的元素的值
+    *value = list->data[pos];
+    // 将删除位置之后的元素前移
+    for (int i = pos + 1; i < list->length; i++) {
+        list->data[i - 1] = list->data[i];
+    }
+    list->length--;
+    return 0;  // 删除成功
+}
+// 获取线性表中指定位置的元素
+int get(SeqList* list, int pos, int* value) {
+    // 判断获取位置是否有效
+    if (pos < 0 || pos >= list->length) {
+        return -1;  // 获取失败
+    }
+    // 获取元素的值
+    *value = list->data[pos];
+    return 0;  // 获取成功
+}
+// 更新线性表中指定位置的元素
+int update(SeqList* list, int pos, int value) {
+    // 判断更新位置是否有效
+    if (pos < 0 || pos >= list->length) {
+        return -1;  // 更新失败
+    }
+    // 更新元素的值
+    list->data[pos] = value;
+    return 0;  // 更新成功
+}
+// 打印线性表中的所有元素
+void print(SeqList* list) {
+    printf("Length: %d\n", list->length);
+    printf("Elements: ");
+    for (int i = 0; i < list->length; i++) {
+        printf("%d ", list->data[i]);
+    }
+    printf("\n");
+}
+// int main() {
+    // SeqList list;
+    // init(&list);
+    //插入元素
+    // insert(&list, 0, 10);
+    // insert(&list, 1, 20);
+    // insert(&list, 2, 30);
+    
+    //打印元素
+    // print(&list);
+    //删除元素
+    // int value;
+    // delete1(&list, 1, &value);
+    // printf("Deleted1 value: %d\n", value);
+    //获取元素
+    // get(&list, 0, &value);
+    // printf("First value: %d\n", value);
+    //更新元素
+    // update(&list, 0, 100);
+    
+    //打印元素
+    // print(&list);
+    // return 0;
+// }
