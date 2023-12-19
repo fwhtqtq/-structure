@@ -2,8 +2,8 @@
 #include <stdlib.h>
 // 定义链表节点结构
 struct Node {
-    int data; // 节点数据
-    struct Node* next; // 指向下一个节点的指针
+    int data;             // 节点数据
+    struct Node* next;    // 指向下一个节点的指针
 };
 // 链表的插入操作
 void insert(struct Node** head_ref, int data) {
@@ -23,13 +23,13 @@ void deleteNode(struct Node** head_ref, int key) {
     // 如果头节点存储的是要删除的值
     if (temp != NULL && temp->data == key) {
         *head_ref = temp->next; // 修改头节点
-        free(temp); // 释放原始的头节点
+        free(temp);             // 释放原始的头节点
         return;
     }
     // 在链表中查找要删除的节点
     while (temp != NULL && temp->data != key) {
-        prev = temp; // 保留前一个节点
-        temp = temp->next; // 移动到下一个节点
+        prev = temp;           // 保留前一个节点
+        temp = temp->next;     // 移动到下一个节点
     }
     // 如果没有找到要删除的节点
     if (temp == NULL)
@@ -49,6 +49,19 @@ struct Node* search(struct Node* head, int key) {
     }
     return NULL; // 如果没有找到返回NULL
 }
+// 释放链表的操作
+void freeList(struct Node** head_ref) {
+    struct Node* current = *head_ref;
+    struct Node* next;
+    // 逐个释放节点内存
+    while (current != NULL) {
+        next = current->next;
+        free(current);
+        current = next;
+    }
+    // 将头指针设为NULL
+    *head_ref = NULL;
+}
 // 打印链表
 void printList(struct Node* head) {
     struct Node* current = head;
@@ -61,23 +74,27 @@ void printList(struct Node* head) {
 // 验证链表操作
 // int main() {
     // struct Node* head = NULL; // 链表头指针
-    // 插入操作
+   // 插入操作
     // insert(&head, 5);
     // insert(&head, 10);
     // insert(&head, 15);
     // insert(&head, 20);
     // printf("插入后的链表： ");
     // printList(head);
-    // 查找操作
+    //查找操作
     // struct Node* search_node = search(head, 10);
     // if (search_node != NULL) {
         // printf("找到节点 %d\n", search_node->data);
     // } else {
         // printf("未找到节点\n");
     // }
-    // 删除操作
+    //删除操作
     // deleteNode(&head, 15);
     // printf("删除后的链表： ");
+    // printList(head);
+    //释放链表
+    // freeList(&head);
+    // printf("释放后的链表： ");
     // printList(head);
     // return 0;
 // }
