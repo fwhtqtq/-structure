@@ -1,0 +1,101 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_SIZE 100
+typedef struct {
+    int data[MAX_SIZE];
+    int top1;   // 第一个栈的栈顶指针
+    int top2;   // 第二个栈的栈顶指针
+} SharedStack;
+// 初始化两栈空间共享结构
+void initSharedStack(SharedStack *stack) {
+    stack->top1 = -1;   // 第一个栈的栈顶指针初始为-1
+    stack->top2 = MAX_SIZE;   // 第二个栈的栈顶指针初始为MAX_SIZE
+}
+// 判断第一个栈是否已满
+int isFull1(SharedStack *stack) {
+    return (stack->top1 + 1) == stack->top2;
+}
+// 判断第二个栈是否已满
+int isFull2(SharedStack *stack) {
+    return stack->top2 - 1 == stack->top1;
+}
+// 判断第一个栈是否为空
+int isEmpty1(SharedStack *stack) {
+    return stack->top1 == -1;
+}
+// 判断第二个栈是否为空
+int isEmpty2(SharedStack *stack) {
+    return stack->top2 == MAX_SIZE;
+}
+// 第一个栈入栈
+void push1(SharedStack *stack, int value) {
+    if (isFull1(stack)) {
+        printf("Stack 1 is full. Cannot push element.\n");
+        return;
+    }
+    stack->top1++;
+    stack->data[stack->top1] = value;
+}
+// 第一个栈出栈
+int pop1(SharedStack *stack) {
+    if (isEmpty1(stack)) {
+        printf("Stack 1 is empty. Cannot pop element.\n");
+        return -1;
+    }
+    int value = stack->data[stack->top1];
+    stack->top1--;
+    return value;
+}
+// 第二个栈入栈
+void push2(SharedStack *stack, int value) {
+    if (isFull2(stack)) {
+        printf("Stack 2 is full. Cannot push element.\n");
+        return;
+    }
+    stack->top2--;
+    stack->data[stack->top2] = value;
+}
+// 第二个栈出栈
+int pop2(SharedStack *stack) {
+    if (isEmpty2(stack)) {
+        printf("Stack 2 is empty. Cannot pop element.\n");
+        return -1;
+    }
+    int value = stack->data[stack->top2];
+    stack->top2++;
+    return value;
+}
+// 获取第一个栈栈顶元素
+int peek1(SharedStack *stack) {
+    if (isEmpty1(stack)) {
+        printf("Stack 1 is empty.\n");
+        return -1;
+    }
+    return stack->data[stack->top1];
+}
+// 获取第二个栈栈顶元素
+int peek2(SharedStack *stack) {
+    if (isEmpty2(stack)) {
+        printf("Stack 2 is empty.\n");
+        return -1;
+    }
+    return stack->data[stack->top2];
+}
+// 释放两栈空间共享结构
+void freeSharedStack(SharedStack *stack) {
+    free(stack);
+}
+// int main() {
+    // SharedStack *stack = (SharedStack *)malloc(sizeof(SharedStack));
+    // initSharedStack(stack);
+    // push1(stack, 1);
+    // push1(stack, 2);
+    // push2(stack, 3);
+    // push2(stack, 4);
+    // printf("Top element of Stack 1: %d\n", peek1(stack));
+    // printf("Top element of Stack 2: %d\n", peek2(stack));
+    // printf("Pop element from Stack 1: %d\n", pop1(stack));
+    // printf("Pop element from Stack 2: %d\n", pop2(stack));
+    // freeSharedStack(stack);
+    // return 0;
+// }
