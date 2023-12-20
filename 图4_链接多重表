@@ -1,0 +1,127 @@
+#include <stdio.h>
+#include <stdlib.h>
+// 边结点
+typedef struct edgeNode {
+    int vertex;                 // 顶点
+    struct edgeNode* nextEdge;  // 指向下一个边结点
+} EdgeNode;
+// 顶点结点
+typedef struct vertexNode {
+    int vertex;                  // 顶点
+    EdgeNode* firstEdge;         // 指向第一个边结点
+} VertexNode;
+// 图
+typedef struct {
+    VertexNode* vertexList;     // 顶点数组
+    int vertexNum;              // 顶点数量
+} Graph;
+// 创建图
+void createGraph(Graph* graph, int vertexNum) {
+    graph->vertexNum = vertexNum;
+    graph->vertexList = (VertexNode*)malloc(vertexNum * sizeof(VertexNode));
+    // 初始化顶点数组
+    for (int i = 0; i < vertexNum; i++) {
+        graph->vertexList[i].vertex = i;
+        graph->vertexList[i].firstEdge = NULL;
+    }
+}
+// 添加边
+void addEdge(Graph* graph, int srcVertex, int destVertex) {
+    if (srcVertex >= graph->vertexNum || destVertex >= graph->vertexNum) {
+        printf("Error: Invalid vertex.\n");
+        return;
+    }
+    // 创建新的边结点
+    EdgeNode* newEdge = (EdgeNode*)malloc(sizeof(EdgeNode));
+    newEdge->vertex = destVertex;
+    newEdge->nextEdge = NULL;
+    // 找到srcVertex的最后一个边结点
+    EdgeNode* currEdge = graph->vertexList[srcVertex].firstEdge;
+    if (currEdge == NULL) {
+        // 如果顶点srcVertex没有边结点，则直接插入到第一个位置
+        graph->vertexList[srcVertex].firstEdge = newEdge;
+    } else {
+        // 否则插入到最后一个边结点之后
+        while (currEdge->nextEdge != NULL) {
+            currEdge = currEdge->nextEdge;
+        }
+        currEdge->nextEdge = newEdge;
+    }
+}
+// 删除边
+void removeEdge(Graph* graph, int srcVertex, int destVertex) {
+    if (srcVertex >= graph->vertexNum || destVertex >= graph->vertexNum) {
+        printf("Error: Invalid vertex.\n");
+        return;
+    }
+    // 找到srcVertex的边结点链表头部
+    EdgeNode* currEdge = graph->vertexList[srcVertex].firstEdge;
+    EdgeNode* prevEdge = NULL;
+    // 遍历边结点链表，找到目标边结点
+    while (currEdge != NULL && currEdge->vertex != destVertex) {
+        prevEdge = currEdge;
+        currEdge = currEdge->nextEdge;
+    }
+    if (currEdge == NULL) {
+        printf("Error: Edge not found.\n");
+        return;
+    }
+    // 从链表中删除目标边结点
+    if (prevEdge == NULL) {
+        // 如果目标边结点是链表头部
+        graph->vertexList[srcVertex].firstEdge = currEdge->nextEdge;
+    } else {
+        // 否则目标边结点不是链表头部
+        prevEdge->nextEdge = currEdge->nextEdge;
+    }
+    free(currEdge);
+}
+// 查询边
+int hasEdge(Graph* graph, int srcVertex, int destVertex) {
+    if (srcVertex >= graph->vertexNum || destVertex >= graph->vertexNum) {
+        printf("Error: Invalid vertex.\n");
+        return 0;
+    }
+    EdgeNode* currEdge = graph->vertexList[srcVertex].firstEdge;
+    // 遍历边结点链表，查找目标边结点
+    while (currEdge != NULL) {
+        if (currEdge->vertex == destVertex) {
+            return 1;  // 找到目标边结点
+        }
+        currEdge = currEdge->nextEdge;
+    }
+    return 0;  // 目标边结点不存在
+}
+// 打印图
+void printGraph(Graph* graph) {
+    for (int i = 0; i < graph->vertexNum; i++) {
+        printf("Vertex %d:", i);
+        EdgeNode* currEdge = graph->vertexList[i].firstEdge;
+        while (currEdge != NULL) {
+            printf(" %d", currEdge->vertex);
+            currEdge = currEdge->nextEdge;
+        }
+        printf("\n");
+    }
+}
+// 主函数
+// int main() {
+    // Graph graph;
+    // int vertexNum = 5;
+    // createGraph(&graph, vertexNum);
+    // addEdge(&graph, 0, 1);
+    // addEdge(&graph, 0, 2);
+    // addEdge(&graph, 1, 2);
+    // addEdge(&graph, 2, 0);
+    // addEdge(&graph, 2, 3);
+    // addEdge(&graph, 3, 3);
+    // printf("Graph:\n");
+    // printGraph(&graph);
+    // printf("\n");
+    // removeEdge(&graph, 0, 2);
+    // removeEdge(&graph, 1, 2);
+    // removeEdge(&graph, 3, 3);
+    // printf("Graph after removal:\n");
+    // printGraph(&graph);
+    // return 0;
+// }
