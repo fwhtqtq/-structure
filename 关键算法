@@ -1,0 +1,86 @@
+// 关键路径算法（Critical Path Method）用于确定工程项目中的关键活动和关键路径，以确定项目的最短完成时间。下面是使用C语言实现关键路径算法的示例代码，已对代码进行了注释。以下是关键路径算法的逻辑：
+
+
+// 构建有向无环图，并计算每个活动的最早开始时间（EST）和最晚开始时间（LST）。
+
+// 计算每个活动的最早结束时间（EET）和最晚结束时间（LET）。
+
+// 根据活动的EST、LST、EET、LET，确定关键活动和关键路径。
+// 代码如下所示：
+#include <stdio.h>
+#include <stdbool.h>
+#define MAX_NODES 100
+#define INFINITY 99999
+// 结构体定义活动
+typedef struct {
+    int duration;
+    int earliestStart;
+    int earliestFinish;
+    int latestStart;
+    int latestFinish;
+} Activity;
+// 初始化活动
+void initActivity(Activity* activity, int duration) {
+    activity->duration = duration;
+    activity->earliestStart = -1;
+    activity->earliestFinish = -1;
+    activity->latestStart = INFINITY;
+    activity->latestFinish = INFINITY;
+}
+// 关键路径算法
+void criticalPath(Activity* activities, int numActivities) {
+    // 计算每个活动的最早开始时间（EST）
+    activities[0].earliestStart = 0;
+    activities[0].earliestFinish = activities[0].duration;
+    for (int i = 1; i < numActivities; i++) {
+        for (int j = 0; j < i; j++) {
+            // 如果活动 j 是活动 i 的前驱活动
+            if (activities[j].earliestFinish > activities[i].earliestStart) {
+                activities[i].earliestStart = activities[j].earliestFinish;
+            }
+        }
+        activities[i].earliestFinish = activities[i].earliestStart + activities[i].duration;
+    }
+    // 计算每个活动的最晚开始时间（LST）和最晚结束时间（LET）
+    activities[numActivities - 1].latestFinish = activities[numActivities - 1].earliestFinish;
+    activities[numActivities - 1].latestStart = activities[numActivities - 1].latestFinish - activities[numActivities - 1].duration;
+    for (int i = numActivities - 2; i >= 0; i--) {
+        for (int j = i + 1; j < numActivities; j++) {
+            // 如果活动 j 是活动 i 的后继活动
+            if (activities[j].latestStart < activities[i].latestFinish) {
+                activities[i].latestFinish = activities[j].latestStart;
+            }
+        }
+        activities[i].latestStart = activities[i].latestFinish - activities[i].duration;
+    }
+    // 判断关键活动和关键路径
+    printf("Critical Activities: ");
+    for (int i = 0; i < numActivities; i++) {
+        if (activities[i].earliestStart == activities[i].latestStart && activities[i].earliestFinish == activities[i].latestFinish) {
+            printf("%d ", i + 1);
+        }
+    }
+    printf("\n");
+    printf("Critical Path: ");
+    for (int i = 0; i < numActivities; i++) {
+        if (activities[i].earliestStart == activities[i].latestStart && activities[i].earliestFinish == activities[i].latestFinish) {
+            printf("%d -> ", i + 1);
+        }
+    }
+    printf("\n");
+    printf("Project Duration: %d\n", activities[numActivities - 1].earliestFinish);
+}
+int main() {
+    int numActivities = 6;
+    Activity activities[numActivities];
+    // 初始化活动
+    initActivity(&activities[0], 2);
+    initActivity(&activities[1], 3);
+    initActivity(&activities[2], 1);
+    initActivity(&activities[3], 4);
+    initActivity(&activities[4], 2);
+    initActivity(&activities[5], 3);
+    // 调用关键路径算法
+    criticalPath(activities, numActivities);
+    return 0;
+}
