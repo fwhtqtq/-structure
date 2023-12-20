@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_SIZE 100
+// 定义循环储存结构的队列
+typedef struct {
+    int data[MAX_SIZE]; // 存储队列元素的数组
+    int front; // 队头指针
+    int rear; // 队尾指针
+} CircularQueue;
+// 初始化队列
+void init(CircularQueue *queue) {
+    queue->front = -1;
+    queue->rear = -1;
+}
+// 判断队列是否为空
+int isEmpty(CircularQueue *queue) {
+    return (queue->front == -1 && queue->rear == -1);
+}
+// 判断队列是否已满
+int isFull(CircularQueue *queue) {
+    return ((queue->rear + 1) % MAX_SIZE == queue->front);
+}
+// 入队操作
+void enqueue(CircularQueue *queue, int value) {
+    if (isFull(queue)) {
+        printf("Queue is full. Cannot enqueue element.\n");
+        return;
+    }
+    if (isEmpty(queue)) {
+        queue->front = 0; // 队列为空时，front和rear都指向队列的第一个元素
+    }
+    queue->rear = (queue->rear + 1) % MAX_SIZE; // rear指针移动到下一个位置
+    queue->data[queue->rear] = value; // 将元素存入队列
+}
+// 出队操作
+int dequeue(CircularQueue *queue) {
+    if (isEmpty(queue)) {
+        printf("Queue is empty. Cannot dequeue element.\n");
+        return -1;
+    }
+    int value = queue->data[queue->front]; // 取出队头元素
+    if (queue->front == queue->rear) {
+        // 队列中只剩下一个元素时，出队后将队列重置为空
+        queue->front = -1;
+        queue->rear = -1;
+    } else {
+        queue->front = (queue->front + 1) % MAX_SIZE; // front指针移动到下一个位置
+    }
+    return value;
+}
+// 查找队头元素
+int peek(CircularQueue *queue) {
+    if (isEmpty(queue)) {
+        printf("Queue is empty. Cannot peek element.\n");
+        return -1;
+    }
+    return queue->data[queue->front];
+}
+// 释放队列的内存空间
+void freeQueue(CircularQueue *queue) {
+    queue->front = -1;
+    queue->rear = -1;
+}
+// int main() {
+    // CircularQueue queue;
+    // init(&queue);
+    // enqueue(&queue, 1);
+    // enqueue(&queue, 2);
+    // enqueue(&queue, 3);
+    // printf("Peek element: %d\n", peek(&queue));
+    // printf("Dequeue element: %d\n", dequeue(&queue));
+    // enqueue(&queue, 4);
+    // printf("Dequeue element: %d\n", dequeue(&queue));
+    // freeQueue(&queue);
+    // return 0;
+// }
