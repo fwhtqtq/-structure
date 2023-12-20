@@ -1,0 +1,183 @@
+#include <stdio.h>
+#include <stdbool.h>
+#define MAX_SIZE 100
+typedef struct {
+    int vertex[MAX_SIZE];   // 顶点数组
+    bool adjMatrix[MAX_SIZE][MAX_SIZE]; // 邻接矩阵
+    int vertexCount;  // 顶点数量
+} Graph;
+// 初始化图
+void initGraph(Graph* graph) {
+    graph->vertexCount = 0;
+    int i, j;
+    for(i = 0; i < MAX_SIZE; i++) {
+        graph->vertex[i] = 0;
+        for(j = 0; j < MAX_SIZE; j++) {
+            graph->adjMatrix[i][j] = false;
+        }
+    }
+}
+// 添加顶点
+void addVertex(Graph* graph, int v) {
+    if(graph->vertexCount >= MAX_SIZE) {
+        printf("图已满，无法添加顶点\n");
+        return;
+    }
+    graph->vertex[graph->vertexCount] = v;
+    graph->vertexCount++;
+}
+// 添加边
+void addEdge(Graph* graph, int start, int end) {
+    int startIdx = -1, endIdx = -1;
+    int i;
+    for(i = 0; i < graph->vertexCount; i++) {
+        if(graph->vertex[i] == start) {
+            startIdx = i;
+        }
+        if(graph->vertex[i] == end) {
+            endIdx = i;
+        }
+    }
+    if(startIdx == -1 || endIdx == -1) {
+        printf("顶点不存在，无法添加边\n");
+        return;
+    }
+    graph->adjMatrix[startIdx][endIdx] = true;
+}
+// 删除顶点
+void removeVertex(Graph* graph, int v) {
+    int vIdx = -1;
+    int i, j;
+    for(i = 0; i < graph->vertexCount; i++) {
+        if(graph->vertex[i] == v) {
+            vIdx = i;
+            break;
+        }
+    }
+    if(vIdx == -1) {
+        printf("顶点不存在，无法删除\n");
+        return;
+    }
+    
+    // 删除顶点及其相关的边
+    for(i = vIdx; i < graph->vertexCount - 1; i++) {
+        graph->vertex[i] = graph->vertex[i+1];
+    }
+    graph->vertexCount--;
+    
+    for(i = 0; i < graph->vertexCount; i++) {
+        for(j = vIdx; j < graph->vertexCount - 1; j++) {
+            graph->adjMatrix[i][j] = graph->adjMatrix[i][j+1];
+        }
+    }
+    for(i = vIdx; i < graph->vertexCount; i++) {
+        for(j = 0; j < graph->vertexCount; j++) {
+            graph->adjMatrix[i][j] = graph->adjMatrix[i+1][j];
+        }
+    }
+}
+// 删除边
+void removeEdge(Graph* graph, int start, int end) {
+    int startIdx = -1, endIdx = -1;
+    int i;
+    for(i = 0; i < graph->vertexCount; i++) {
+        if(graph->vertex[i] == start) {
+            startIdx = i;
+        }
+        if(graph->vertex[i] == end) {
+            endIdx = i;
+        }
+    }
+    if(startIdx == -1 || endIdx == -1) {
+        printf("顶点不存在，无法删除边\n");
+        return;
+    }
+    graph->adjMatrix[startIdx][endIdx] = false;
+}
+// 查询顶点
+bool hasVertex(Graph* graph, int v) {
+    int i;
+    for(i = 0; i < graph->vertexCount; i++) {
+        if(graph->vertex[i] == v) {
+            return true;
+        }
+    }
+    return false;
+}
+// 查询边
+bool hasEdge(Graph* graph, int start, int end) {
+    int startIdx = -1, endIdx = -1;
+    int i;
+    for(i = 0; i < graph->vertexCount; i++) {
+        if(graph->vertex[i] == start) {
+            startIdx = i;
+        }
+        if(graph->vertex[i] == end) {
+            endIdx = i;
+        }
+    }
+    if(startIdx == -1 || endIdx == -1) {
+        printf("顶点不存在\n");
+        return false;
+    }
+    return graph->adjMatrix[startIdx][endIdx];
+}
+int main() {
+    Graph graph;
+    initGraph(&graph);
+    
+    addVertex(&graph, 1);
+    addVertex(&graph, 2);
+    addVertex(&graph, 3);
+    
+    addEdge(&graph, 1, 2);
+    addEdge(&graph, 2, 3);
+    
+    // 验证添加顶点和边
+    printf("顶点和边的邻接矩阵：\n");
+    int i, j;
+    for(i = 0; i < graph.vertexCount; i++) {
+        for(j = 0; j < graph.vertexCount; j++) {
+            printf("%d ", graph.adjMatrix[i][j] ? 1 : 0);
+        }
+        printf("\n");
+    }
+    
+    // 验证查询顶点
+    int v = 2;
+    if(hasVertex(&graph, v)) {
+        printf("%d 是图的顶点\n", v);
+    } else {
+        printf("%d 不是图的顶点\n", v);
+    }
+    
+    // 验证查询边
+    int start = 1, end = 2;
+    if(hasEdge(&graph, start, end)) {
+        printf("%d 和 %d 之间有边\n", start, end);
+    } else {
+        printf("%d 和 %d 之间没有边\n", start, end);
+    }
+    
+    // 验证删除顶点
+    removeVertex(&graph, 1);
+    printf("删除顶点后的邻接矩阵：\n");
+    for(i = 0; i < graph.vertexCount; i++) {
+        for(j = 0; j < graph.vertexCount; j++) {
+            printf("%d ", graph.adjMatrix[i][j] ? 1 : 0);
+        }
+        printf("\n");
+    }
+    
+    // 验证删除边
+    removeEdge(&graph, start, end);
+    printf("删除边后的邻接矩阵：\n");
+    for(i = 0; i < graph.vertexCount; i++) {
+        for(j = 0; j < graph.vertexCount; j++) {
+            printf("%d ", graph.adjMatrix[i][j] ? 1 : 0);
+        }
+        printf("\n");
+    }
+    
+    return 0;
+}
