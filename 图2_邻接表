@@ -1,0 +1,136 @@
+#include <stdio.h>
+#include <stdlib.h>
+// 每个顶点在邻接表中的节点结构
+typedef struct Node {
+    int vertex;
+    struct Node* next;
+} Node;
+// 图的结构，包含一个邻接表的节点指针数组
+typedef struct Graph {
+    int numVertices;
+    Node** adjLists;
+} Graph;
+// 创建一个新节点
+Node* createNode(int v) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->vertex = v;
+    newNode->next = NULL;
+    return newNode;
+}
+// 创建包含给定顶点数的图
+Graph* createGraph(int vertices) {
+    Graph* graph = (Graph*)malloc(sizeof(Graph));
+    graph->numVertices = vertices;
+    // 创建邻接表的节点指针数组
+    graph->adjLists = (Node**)malloc(vertices * sizeof(Node*));
+    // 将所有的邻接表初始化为空
+    for (int i = 0; i < vertices; i++) {
+        graph->adjLists[i] = NULL;
+    }
+    return graph;
+}
+// 添加一条边到图中
+void addEdge(Graph* graph, int src, int dest) {
+    // 添加从源节点到目标节点的边
+    Node* newNode = createNode(dest);
+    newNode->next = graph->adjLists[src];
+    graph->adjLists[src] = newNode;
+    // 对于无向图，还需添加从目标节点到源节点的边
+    newNode = createNode(src);
+    newNode->next = graph->adjLists[dest];
+    graph->adjLists[dest] = newNode;
+}
+// 删除图中的一条边
+void removeEdge(Graph* graph, int src, int dest) {
+    Node* currNode = graph->adjLists[src];
+    Node* prevNode = NULL;
+    // 遍历源节点的邻接表，找到要删除的节点
+    while (currNode != NULL && currNode->vertex != dest) {
+        prevNode = currNode;
+        currNode = currNode->next;
+    }
+    // 如果找到了要删除的节点，则删除它
+    if (currNode != NULL) {
+        if (prevNode == NULL) { // 要删除的节点是第一个节点
+            graph->adjLists[src] = currNode->next;
+        } else { // 要删除的节点在链表中间或末尾
+            prevNode->next = currNode->next;
+        }
+        free(currNode);
+    }
+    // 对于无向图，还需删除目标节点到源节点的边
+    currNode = graph->adjLists[dest];
+    prevNode = NULL;
+    // 遍历目标节点的邻接表，找到要删除的节点
+    while (currNode != NULL && currNode->vertex != src) {
+        prevNode = currNode;
+        currNode = currNode->next;
+    }
+    // 如果找到了要删除的节点，则删除它
+    if (currNode != NULL) {
+        if (prevNode == NULL) { // 要删除的节点是第一个节点
+            graph->adjLists[dest] = currNode->next;
+        } else { // 要删除的节点在链表中间或末尾
+            prevNode->next = currNode->next;
+        }
+        free(currNode);
+    }
+}
+// 查询是否存在一条边
+int hasEdge(Graph* graph, int src, int dest) {
+    Node* currNode = graph->adjLists[src];
+    // 遍历源节点的邻接表，查找目标节点
+    while (currNode != NULL && currNode->vertex != dest) {
+        currNode = currNode->next;
+    }
+    // 如果找到了目标节点，则存在边；否则不存在边
+    if (currNode != NULL) {
+        return 1; // 存在边
+    } else {
+        return 0; // 不存在边
+    }
+}
+// 打印图的邻接表
+void printGraph(Graph* graph) {
+    for (int i = 0; i < graph->numVertices; i++) {
+        Node* currNode = graph->adjLists[i];
+        printf("Vertex %d: ", i);
+        while (currNode != NULL) {
+            printf("%d -> ", currNode->vertex);
+            currNode = currNode->next;
+        }
+        printf("NULL\n");
+    }
+}
+// int main() {
+    // int vertices, edges;
+    // printf("Enter the number of vertices: ");
+    // scanf("%d", &vertices);
+    // Graph* graph = createGraph(vertices);
+    // printf("Enter the number of edges: ");
+    // scanf("%d", &edges);
+    // printf("Enter the edges (src dest):\n");
+    // for (int i = 0; i < edges; i++) {
+        // int src, dest;
+        // scanf("%d %d", &src, &dest);
+        // addEdge(graph, src, dest);
+    // }
+    // printf("Graph representation using adjacency list:\n");
+    // printGraph(graph);
+    // 删除一条边并再次打印图的邻接表
+    // int src, dest;
+    // printf("Enter the edge to remove (src dest): ");
+    // scanf("%d %d", &src, &dest);
+    // removeEdge(graph, src, dest);
+    // printf("Graph representation after removing an edge:\n");
+    // printGraph(graph);
+    // 查询一条边是否存在并输出结果
+    // printf("Enter the edge to check (src dest): ");
+    // scanf("%d %d", &src, &dest);
+    // if (hasEdge(graph, src, dest)) {
+        // printf("The edge (%d, %d) exists.\n", src, dest);
+    // } else {
+        // printf("The edge (%d, %d) does not exist.\n", src, dest);
+    // }
+    // return 0;
+// }
