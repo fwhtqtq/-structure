@@ -1,0 +1,39 @@
+#include <stdio.h>
+#include <string.h>
+// 朴素模式匹配算法
+int naivePatternMatching(char* text, char* pattern) {
+    int textLen = strlen(text);
+    int patternLen = strlen(pattern);
+    
+    // 在主串中逐个比较字符
+    for (int i = 0; i <= textLen - patternLen; i++) {
+        int j;
+        // 逐个比较字符
+        for (j = 0; j < patternLen; j++) {
+            if (text[i + j] != pattern[j])
+                break; // 不匹配，退出内层循环
+        }
+        
+        // 若内层循环完全匹配，则返回匹配的起始位置
+        if (j == patternLen)
+            return i; 
+    }
+    
+    return -1; // 匹配失败，返回-1
+}
+// int main() {
+    // char text[] = "Hello, World!";
+    // char pattern[] = "World";
+    
+    // 使用朴素模式匹配算法检查模式串是否出现在主串中
+    // int pos = naivePatternMatching(text, pattern);
+    
+    // 根据匹配结果进行相应处理
+    // if (pos != -1) {
+        // printf("Pattern found at position: %d\n", pos);
+    // } else {
+        // printf("Pattern not found.\n");
+    // }
+    
+    // return 0;
+// }
