@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <stdbool.h>
+#define MAX_NODES 100
+#define INFINITE 99999
+typedef struct
+{
+    int weight[MAX_NODES][MAX_NODES];
+    int numNodes;
+} Graph;
+// 初始化图
+void initGraph(Graph *graph, int numNodes)
+{
+    graph->numNodes = numNodes;
+    // 初始化所有边的权重为无穷大
+    for (int i = 0; i < numNodes; i++)
+    {
+        for (int j = 0; j < numNodes; j++)
+        {
+            graph->weight[i][j] = INFINITE;
+        }
+    }
+}
+// 添加边
+void addEdge(Graph *graph, int src, int dest, int weight)
+{
+    graph->weight[src][dest] = weight;
+}
+// 输出最短路径矩阵
+void printShortestPaths(int distance[MAX_NODES][MAX_NODES], int numNodes)
+{
+    printf("Shortest Paths:\n");
+    for (int i = 0; i < numNodes; i++)
+    {
+        for (int j = 0; j < numNodes; j++)
+        {
+            if (distance[i][j] == INFINITE)
+                printf("INF\t");
+            else
+                printf("%d\t", distance[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+// 使用佛洛依德算法计算最短路径
+void floyd(Graph *graph)
+{
+    int numNodes = graph->numNodes;
+    int distance[MAX_NODES][MAX_NODES];
+    // 初始化距离矩阵
+    for (int i = 0; i < numNodes; i++)
+    {
+        for (int j = 0; j < numNodes; j++)
+        {
+            distance[i][j] = graph->weight[i][j];
+        }
+    }
+    // 计算最短路径
+    for (int k = 0; k < numNodes; k++)
+    {
+        for (int i = 0; i < numNodes; i++)
+        {
+            for (int j = 0; j < numNodes; j++)
+            {
+                // 如果通过中间节点k可以找到更短的路径，则更新距离矩阵
+                if (distance[i][k] + distance[k][j] < distance[i][j])
+                {
+                    distance[i][j] = distance[i][k] + distance[k][j];
+                }
+            }
+        }
+    }
+    // 输出最短路径
+    printShortestPaths(distance, numNodes);
+}
+int main()
+{
+    int numNodes = 4;
+    Graph graph;
+    initGraph(&graph, numNodes);
+    // 添加边
+    addEdge(&graph, 0, 1, 3);
+    addEdge(&graph, 0, 2, 6);
+    addEdge(&graph, 1, 0, 3);
+    addEdge(&graph, 1, 2, 2);
+    addEdge(&graph, 1, 3, 1);
+    addEdge(&graph, 2, 3, 4);
+    addEdge(&graph, 3, 2, 1);
+    // 使用佛洛依德算法计算最短路径
+    floyd(&graph);
+    return 0;
+}
