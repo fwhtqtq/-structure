@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <stdlib.h>
+typedef struct TreeNode {
+    int data;               // 节点数据
+    struct TreeNode *firstChild; // 第一个孩子节点
+    struct TreeNode *nextSibling; // 下一个兄弟节点
+} TreeNode;
+// 创建节点
+TreeNode* createNode(int data) {
+    TreeNode *newNode = (TreeNode*) malloc(sizeof(TreeNode));
+    if (newNode == NULL) {  // 检查内存分配是否成功
+        printf("Error: Failed to allocate memory for new node.\n");
+        exit(1);
+    }
+    newNode->data = data;
+    newNode->firstChild = NULL;
+    newNode->nextSibling = NULL;
+    return newNode;
+}
+// 添加孩子节点
+void addChild(TreeNode *parent, TreeNode *child) {
+    // 如果父节点没有第一个孩子节点
+    if (parent->firstChild == NULL) {
+        parent->firstChild = child;  // 直接将孩子节点作为父节点的第一个孩子
+    } else {  // 如果父节点已有孩子节点
+        TreeNode *sibling = parent->firstChild;
+        // 遍历到兄弟节点链表的末尾
+        while (sibling->nextSibling != NULL) {
+            sibling = sibling->nextSibling;
+        }
+        sibling->nextSibling = child;  // 将孩子节点添加到兄弟节点链表的末尾
+    }
+}
+// 验证树的孩子兄弟表示法
+int verifyChildSibling(TreeNode *node) {
+    if (node == NULL) {
+        printf("Error: Tree is empty.\n");
+        return 0;
+    }
+    return 1;
+}
+// 打印树节点
+void printTree(TreeNode *node) {
+    if (node == NULL) {
+        return;
+    }
+    printf("%d ", node->data);
+    printTree(node->firstChild);    // 递归打印孩子节点
+    printTree(node->nextSibling);   // 递归打印兄弟节点
+}
+// int main() {
+    // 创建节点
+    // TreeNode *rootNode = createNode(1);  // 根节点
+    // TreeNode *child1 = createNode(2);   // 孩子节点1
+    // TreeNode *child2 = createNode(3);   // 孩子节点2
+    // TreeNode *child3 = createNode(4);   // 孩子节点3
+    // 构建树的结构
+    // addChild(rootNode, child1);
+    // addChild(rootNode, child2);
+    // addChild(child1, child3);
+    // 验证树的孩子兄弟表示法
+    // int isValid = verifyChildSibling(rootNode);
+    // if (isValid) {
+        // printf("Child-sibling representation of the tree is valid.\n");
+    // } else {
+        // printf("Child-sibling representation of the tree is invalid.\n");
+    // }
+    // 打印树
+    // printf("Tree: ");
+    // printTree(rootNode);
+    // printf("\n");
+    // return 0;
+// }
