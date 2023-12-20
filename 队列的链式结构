@@ -1,0 +1,87 @@
+#include <stdio.h>
+#include <stdlib.h>
+// 定义队列的节点结构
+typedef struct Node {
+    int data; // 节点存储的数据
+    struct Node *next; // 指向下一个节点的指针
+} Node;
+// 定义链式储存结构的队列
+typedef struct {
+    Node *front; // 队头指针
+    Node *rear; // 队尾指针
+} Queue;
+// 初始化队列
+void init(Queue *queue) {
+    queue->front = NULL;
+    queue->rear = NULL;
+}
+// 判断队列是否为空
+int isEmpty(Queue *queue) {
+    return (queue->front == NULL && queue->rear == NULL);
+}
+// 入队操作
+void enqueue(Queue *queue, int value) {
+    Node *newNode = (Node *)malloc(sizeof(Node));
+    newNode->data = value;
+    newNode->next = NULL;
+    if (isEmpty(queue)) {
+        // 队列为空时，front和rear都指向新节点
+        queue->front = newNode;
+        queue->rear = newNode;
+    } else {
+        // 队尾指针指向新节点，并更新rear
+        queue->rear->next = newNode;
+        queue->rear = newNode;
+    }
+}
+// 出队操作
+int dequeue(Queue *queue) {
+    if (isEmpty(queue)) {
+        printf("Queue is empty. Cannot dequeue element.\n");
+        return -1;
+    }
+    Node *temp = queue->front; // 临时节点指向队头节点
+    int value = temp->data; // 取出队头元素值
+    if (queue->front == queue->rear) {
+        // 队列中只剩下一个元素时，出队后将队列重置为空
+        queue->front = NULL;
+        queue->rear = NULL;
+    } else {
+        // front指针指向队头的下一个节点
+        queue->front = queue->front->next;
+    }
+    free(temp); // 释放节点的内存空间
+    return value;
+}
+// 查找队头元素
+int peek(Queue *queue) {
+    if (isEmpty(queue)) {
+        printf("Queue is empty. Cannot peek element.\n");
+        return -1;
+    }
+    return queue->front->data; // 返回队头元素的值
+}
+// 释放队列的内存空间
+void freeQueue(Queue *queue) {
+    Node *current = queue->front;
+    while (current != NULL) {
+        Node *temp = current;
+        current = current->next;
+        free(temp);
+    }
+    queue->front = NULL;
+    queue->rear = NULL;
+}
+// int main() {
+    // Queue queue;
+    // init(&queue);
+    // enqueue(&queue, 1);
+    // enqueue(&queue, 2);
+    // enqueue(&queue, 3);
+    // printf("Peek element: %d\n", peek(&queue));
+    // printf("Dequeue element: %d\n", dequeue(&queue));
+    // enqueue(&queue, 4);
+    // printf("Dequeue element: %d\n", dequeue(&queue));
+    // freeQueue(&queue);
+    // return 0;
+// }
