@@ -1,0 +1,91 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_VERTICES 100
+// 邻接表节点
+typedef struct AdjListNode {
+    int destVertex;                 // 目标顶点
+    struct AdjListNode* next;       // 下一个节点
+} AdjListNode;
+// 邻接表头节点
+typedef struct AdjList {
+    AdjListNode* head;
+} AdjList;
+// 图结构体
+typedef struct Graph {
+    int vertexNum;                  // 顶点数量
+    AdjList* adjLists[MAX_VERTICES]; // 邻接表数组
+    int visited[MAX_VERTICES];      // 访问数组，用于标记已访问的顶点
+} Graph;
+// 创建图
+Graph* createGraph(int vertexNum) {
+    Graph* graph = (Graph*)malloc(sizeof(Graph));
+    graph->vertexNum = vertexNum;
+    
+    // 初始化邻接表数组和访问数组
+    for (int i = 0; i < vertexNum; i++) {
+        graph->adjLists[i] = (AdjList*)malloc(sizeof(AdjList));
+        graph->adjLists[i]->head = NULL;
+        graph->visited[i] = 0;
+    }
+    
+    return graph;
+}
+// 添加边
+void addEdge(Graph* graph, int srcVertex, int destVertex) {
+    // 创建新的邻接表节点
+    AdjListNode* newNode = (AdjListNode*)malloc(sizeof(AdjListNode));
+    newNode->destVertex = destVertex;
+    newNode->next = graph->adjLists[srcVertex]->head;
+    graph->adjLists[srcVertex]->head = newNode;
+    
+    // 无向图需添加反向边
+    newNode = (AdjListNode*)malloc(sizeof(AdjListNode));
+    newNode->destVertex = srcVertex;
+    newNode->next = graph->adjLists[destVertex]->head;
+    graph->adjLists[destVertex]->head = newNode;
+}
+// 深度优先遍历
+void DFS(Graph* graph, int vertex) {
+    // 标记当前顶点已访问
+    graph->visited[vertex] = 1;
+    printf("%d ", vertex);
+    
+    // 遍历与当前顶点相连的顶点
+    AdjListNode* adjNode = graph->adjLists[vertex]->head;
+    while (adjNode != NULL) {
+        if (graph->visited[adjNode->destVertex] == 0) {
+            DFS(graph, adjNode->destVertex);
+        }
+        adjNode = adjNode->next;
+    }
+}
+// 主函数
+// int main() {
+    // int vertexNum = 5;
+    // Graph* graph = createGraph(vertexNum);
+    
+    // addEdge(graph, 0, 1);
+    // addEdge(graph, 0, 2);
+    // addEdge(graph, 1, 2);
+    // addEdge(graph, 2, 0);
+    // addEdge(graph, 2, 3);
+    // addEdge(graph, 3, 3);
+    
+    // printf("Depth First Traversal (DFS):\n");
+    // DFS(graph, 2);
+    // printf("\n");
+    
+    //释放内存
+    // for (int i = 0; i < vertexNum; i++) {
+        // AdjListNode* adjNode = graph->adjLists[i]->head;
+        // while (adjNode != NULL) {
+            // AdjListNode* temp = adjNode;
+            // adjNode = adjNode->next;
+            // free(temp);
+        // }
+        // free(graph->adjLists[i]);
+    // }
+    // free(graph);
+    
+    // return 0;
+// }
