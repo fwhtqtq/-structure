@@ -1,0 +1,98 @@
+ #include <stdio.h>
+#include <stdlib.h>
+// 边结构体
+typedef struct {
+    int srcVertex;   // 边的起始顶点
+    int destVertex;  // 边的目标顶点
+} Edge;
+// 图结构体
+typedef struct {
+    int vertexNum;  // 顶点数量
+    int edgeNum;    // 边数量
+    Edge* edgeArray;  // 边的数组
+} Graph;
+// 创建图
+void createGraph(Graph* graph, int vertexNum) {
+    graph->vertexNum = vertexNum;
+    graph->edgeNum = 0;
+    graph->edgeArray = NULL;
+}
+// 添加边
+void addEdge(Graph* graph, int srcVertex, int destVertex) {
+    // 检查顶点的有效性
+    if (srcVertex >= graph->vertexNum || destVertex >= graph->vertexNum) {
+        printf("Error: Invalid vertex.\n");
+        return;
+    }
+    
+    // 扩展边数组大小
+    graph->edgeNum++;
+    graph->edgeArray = (Edge*)realloc(graph->edgeArray, graph->edgeNum * sizeof(Edge));
+    
+    // 在边数组的最后添加新的边
+    graph->edgeArray[graph->edgeNum - 1].srcVertex = srcVertex;
+    graph->edgeArray[graph->edgeNum - 1].destVertex = destVertex;
+}
+// 删除边
+void removeEdge(Graph* graph, int srcVertex, int destVertex) {
+    // 遍历边数组，找到要删除的边
+    for (int i = 0; i < graph->edgeNum; i++) {
+        Edge edge = graph->edgeArray[i];
+        if (edge.srcVertex == srcVertex && edge.destVertex == destVertex) {
+            // 将最后一条边覆盖要删除的边，并缩小边数组大小
+            graph->edgeArray[i] = graph->edgeArray[graph->edgeNum - 1];
+            graph->edgeNum--;
+            graph->edgeArray = (Edge*)realloc(graph->edgeArray, graph->edgeNum * sizeof(Edge));
+            return;
+        }
+    }
+    
+    printf("Error: Edge not found.\n");
+}
+// 查询边
+int hasEdge(Graph* graph, int srcVertex, int destVertex) {
+    // 遍历边数组，查找目标边
+    for (int i = 0; i < graph->edgeNum; i++) {
+        Edge edge = graph->edgeArray[i];
+        if (edge.srcVertex == srcVertex && edge.destVertex == destVertex) {
+            return 1;  // 找到目标边
+        }
+    }
+    
+    return 0;  // 目标边不存在
+}
+// 打印图
+void printGraph(Graph* graph) {
+    printf("Graph:\n");
+    
+    for (int i = 0; i < graph->edgeNum; i++) {
+        Edge edge = graph->edgeArray[i];
+        printf("Edge %d: %d -> %d\n", i, edge.srcVertex, edge.destVertex);
+    }
+}
+// 主函数
+// int main() {
+    // Graph graph;
+    // int vertexNum = 5;
+    // createGraph(&graph, vertexNum);
+    
+    // addEdge(&graph, 0, 1);
+    // addEdge(&graph, 0, 2);
+    // addEdge(&graph, 1, 2);
+    // addEdge(&graph, 2, 0);
+    // addEdge(&graph, 2, 3);
+    // addEdge(&graph, 3, 3);
+    
+    // printGraph(&graph);
+    // printf("\n");
+    
+    // removeEdge(&graph, 0, 2);
+    // removeEdge(&graph, 1, 2);
+    // removeEdge(&graph, 3, 3);
+    
+    // printGraph(&graph);
+    
+    // free(graph.edgeArray);  // 释放边数组内存
+    
+    // return 0;
+// }
