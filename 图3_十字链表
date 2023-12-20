@@ -1,0 +1,225 @@
+#include <stdio.h>
+#include <stdlib.h>
+// 边节点
+typedef struct EdgeNode {
+    int tail;           // 边的起点
+    int head;           // 边的终点
+    struct EdgeNode* hlink;    // 下一个以head为起点的边
+    struct EdgeNode* tlink;    // 下一个以tail为起点的边
+} EdgeNode;
+// 顶点节点
+typedef struct VertexNode {
+    int id;             // 顶点的编号
+    struct EdgeNode* firstin;   // 入边链表的头指针
+    struct EdgeNode* firstout;  // 出边链表的头指针
+} VertexNode;
+// 十字链表结构
+typedef struct CrossLinkedList {
+    VertexNode* vertices;   // 顶点数组
+    int numOfVertices;      // 顶点数目
+    int numOfEdges;         // 边数目
+} CrossLinkedList;
+// 初始化图
+void initGraph(CrossLinkedList* graph, int numOfVertices) {
+    graph->numOfVertices = numOfVertices;
+    graph->numOfEdges = 0;
+    
+    // 创建顶点数组
+    graph->vertices = (VertexNode*)malloc(sizeof(VertexNode) * numOfVertices);
+    
+    // 初始化顶点数组
+    for (int i = 0; i < numOfVertices; i++) {
+        graph->vertices[i].id = i;
+        graph->vertices[i].firstin = NULL;
+        graph->vertices[i].firstout = NULL;
+    }
+}
+// 添加边
+void addEdge(CrossLinkedList* graph, int tail, int head) {
+    if (tail < 0 || tail >= graph->numOfVertices || head < 0 || head >= graph->numOfVertices) {
+        printf("Invalid vertex!\n");
+        return;
+    }
+    
+    // 创建边节点
+    EdgeNode* edge = (EdgeNode*)malloc(sizeof(EdgeNode));
+    edge->tail = tail;
+    edge->head = head;
+    edge->hlink = NULL;
+    edge->tlink = NULL;
+    
+    // 添加边到出边链表
+    if (graph->vertices[tail].firstout == NULL) {
+        graph->vertices[tail].firstout = edge;
+    } else {
+        EdgeNode* temp = graph->vertices[tail].firstout;
+        while (temp->tlink != NULL) {
+            temp = temp->tlink;
+        }
+        temp->tlink = edge;
+    }
+    
+    // 添加边到入边链表
+    if (graph->vertices[head].firstin == NULL) {
+        graph->vertices[head].firstin = edge;
+    } else {
+        EdgeNode* temp = graph->vertices[head].firstin;
+        while (temp->hlink != NULL) {
+            temp = temp->hlink;
+        }
+        temp->hlink = edge;
+    }
+    
+    graph->numOfEdges++;  // 边数加1
+}
+// 删除边
+void deleteEdge(CrossLinkedList* graph, int tail, int head) {
+    if (tail < 0 || tail >= graph->numOfVertices || head < 0 || head >= graph->numOfVertices) {
+        printf("Invalid vertex!\n");
+        return;
+    }
+    
+    EdgeNode* temp = graph->vertices[tail].firstout;
+    EdgeNode* prev = NULL;
+    
+    // 在出边链表中找到待删除的边
+    while (temp != NULL && (temp->tail != tail || temp->head != head)) {
+        prev = temp;
+        temp = temp->tlink;
+    }
+    
+    if (temp == NULL) {
+        printf("Edge not found!\n");
+        return;
+    }
+    
+    // 从出边链表中删除边
+    if (prev == NULL) {
+        graph->vertices[tail].firstout = temp->tlink;
+    } else {
+        prev->tlink = temp->tlink;
+    }
+    
+    temp = graph->vertices[head].firstin;
+    prev = NULL;
+    
+    // 在入边链表中找到待删除的边
+    while (temp != NULL && (temp->tail != tail || temp->head != head)) {
+        prev = temp;
+        temp = temp->hlink;
+    }
+    
+    if (temp == NULL) {
+        printf("Edge not found!\n");
+        return;
+    }
+    
+    // 从入边链表中删除边
+    if (prev == NULL) {
+        graph->vertices[head].firstin = temp->hlink;
+    } else {
+        prev->hlink = temp->hlink;
+    }
+    
+    free(temp);  // 释放边节点内存
+    graph->numOfEdges--;  // 边数减1
+}
+// 查询顶点的出度
+int getOutDegree(CrossLinkedList* graph, int vertex) {
+    if (vertex < 0 || vertex >= graph->numOfVertices) {
+        printf("Invalid vertex!\n");
+        return -1;
+    }
+    
+    int count = 0;
+    EdgeNode* temp = graph->vertices[vertex].firstout;
+    
+    // 遍历出边链表计算出度
+    while (temp != NULL) {
+        count++;
+        temp = temp->tlink;
+    }
+    
+    return count;
+}
+// 查询顶点的入度
+int getInDegree(CrossLinkedList* graph, int vertex) {
+    if (vertex < 0 || vertex >= graph->numOfVertices) {
+        printf("Invalid vertex!\n");
+        return -1;
+    }
+    
+    int count = 0;
+    EdgeNode* temp = graph->vertices[vertex].firstin;
+    
+    // 遍历入边链表计算入度
+    while (temp != NULL) {
+        count++;
+        temp = temp->hlink;
+    }
+    
+    return count;
+}
+// 输出图的信息
+void printGraph(CrossLinkedList* graph) {
+    printf("Number of vertices: %d\n", graph->numOfVertices);
+    printf("Number of edges: %d\n", graph->numOfEdges);
+    
+    for (int i = 0; i < graph->numOfVertices; i++) {
+        printf("Vertex %d: ", i);
+        
+        // 打印出边链表
+        EdgeNode* temp = graph->vertices[i].firstout;
+        while (temp != NULL) {
+            printf("(%d, %d) ", temp->tail, temp->head);
+            temp = temp->tlink;
+        }
+        
+        printf("\n");
+    }
+}
+// 释放图内存
+void freeGraph(CrossLinkedList* graph) {
+    for (int i = 0; i < graph->numOfVertices; i++) {
+        // 释放出边链表
+        EdgeNode* tempOut = graph->vertices[i].firstout;
+        while (tempOut != NULL) {
+            EdgeNode* next = tempOut->tlink;
+            free(tempOut);
+            tempOut = next;
+        }
+        
+        // 释放入边链表
+        EdgeNode* tempIn = graph->vertices[i].firstin;
+        while (tempIn != NULL) {
+            EdgeNode* next = tempIn->hlink;
+            free(tempIn);
+            tempIn = next;
+        }
+    }
+    
+    free(graph->vertices);  // 释放顶点数组内存
+}
+// int main() {
+    // int numOfVertices = 5;
+    // CrossLinkedList graph;
+    
+    // initGraph(&graph, numOfVertices);
+    
+    // addEdge(&graph, 0, 1);
+    // addEdge(&graph, 0, 2);
+    // addEdge(&graph, 1, 3);
+    // addEdge(&graph, 2, 3);
+    // addEdge(&graph, 3, 4);
+    
+    // printGraph(&graph);
+    
+    // deleteEdge(&graph, 1, 3);
+    
+    // printf("Out degree of vertex 2: %d\n", getOutDegree(&graph, 2));
+    // printf("In degree of vertex 3: %d\n", getInDegree(&graph, 3));
+    
+    // freeGraph(&graph);
+    
+    // return 0;
+// }
