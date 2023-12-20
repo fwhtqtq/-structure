@@ -1,0 +1,80 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_TREE_SIZE 100  // 树的最大节点数
+typedef struct TreeNode {
+    int data;               // 节点数据
+    int parent;             // 父节点的索引
+} TreeNode;
+typedef struct Tree {
+    TreeNode nodes[MAX_TREE_SIZE];  // 存储节点的数组
+    int n;                          // 树的节点数
+} Tree;
+// 初始化树
+void initTree(Tree *tree) {
+    tree->n = 0;
+}
+// 添加节点
+void addNode(Tree *tree, int data, int parentIndex) {
+    if (tree->n >= MAX_TREE_SIZE) {
+        printf("Error: Tree is full.\n");
+        return;
+    }
+    TreeNode *node = &(tree->nodes[tree->n]);
+    node->data = data;
+    node->parent = parentIndex;
+    tree->n++;
+}
+// 验证树的双亲表示法
+int verifyParentArray(Tree *tree) {
+    for (int i = 1; i < tree->n; i++) {
+        TreeNode *node = &(tree->nodes[i]);
+        
+        // 确保父节点的索引在有效范围内
+        if (node->parent < -1 || node->parent >= tree->n) {
+            printf("Error: Invalid parent index at node %d.\n", i);
+            return 0;
+        }
+        // 确保根节点没有父节点
+        if (i == 0 && node->parent != -1) {
+            printf("Error: Root node has a parent.\n");
+            return 0;
+        }
+        // 确保非根节点有且只有一个父节点
+        if (i != 0 && node->parent == -1) {
+            printf("Error: Non-root node has no parent.\n");
+            return 0;
+        }
+        // 确保父节点的子节点索引正确
+        TreeNode *parentNode = &(tree->nodes[node->parent]);
+        int childIndexFound = 0;
+        for (int j = 0; j < tree->n; j++) {
+            if (parentNode == &(tree->nodes[j])) {
+                childIndexFound = 1;
+                break;
+            }
+        }
+        if (!childIndexFound) {
+            printf("Error: Incorrect parent-child relationship at node %d.\n", i);
+            return 0;
+        }
+    }
+    printf("Tree is valid.\n");
+    return 1;
+}
+// int main() {
+    // Tree tree;
+    // initTree(&tree);
+    // 添加节点
+    // addNode(&tree, 1, -1);  // 根节点
+    // addNode(&tree, 2, 0);   // 子节点
+    // addNode(&tree, 3, 0);   // 子节点
+    // addNode(&tree, 4, 1);   // 子节点
+    // 验证树的双亲表示法
+    // int isValid = verifyParentArray(&tree);
+    // if (isValid) {
+        // printf("Parent array is valid.\n");
+    // } else {
+        // printf("Parent array is invalid.\n");
+    // }
+    // return 0;
+// }
