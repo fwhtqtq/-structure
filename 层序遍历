@@ -1,0 +1,128 @@
+#include <stdio.h>
+#include <stdlib.h>
+// 二叉树节点结构
+typedef struct Node {
+    int data;                   // 节点数据
+    struct Node* left;          // 左子节点指针
+    struct Node* right;         // 右子节点指针
+} TreeNode;
+// 辅助队列节点结构
+typedef struct QueueNode {
+    TreeNode* treeNode;         // 指向二叉树节点的指针
+    struct QueueNode* next;     // 指向下一个队列节点的指针
+} QueueNode;
+// 队列结构
+typedef struct Queue {
+    QueueNode* front;           // 队列前端指针
+    QueueNode* rear;            // 队列尾端指针
+} Queue;
+// 创建新节点
+TreeNode* createNode(int data) {
+    TreeNode* newNode = (TreeNode*)malloc(sizeof(TreeNode));
+    if (newNode == NULL) {
+        printf("Error: Cannot allocate memory for new node.\n");
+        exit(1);
+    }
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+// 初始化队列
+Queue* createQueue() {
+    Queue* queue = (Queue*)malloc(sizeof(Queue));
+    if (queue == NULL) {
+        printf("Error: Cannot allocate memory for queue.\n");
+        exit(1);
+    }
+    queue->front = NULL;
+    queue->rear = NULL;
+    return queue;
+}
+// 判断队列是否为空
+int isEmptyQueue(Queue* queue) {
+    return (queue->front == NULL);
+}
+// 入队
+void enqueue(Queue* queue, TreeNode* treeNode) {
+    QueueNode* newQueueNode = (QueueNode*)malloc(sizeof(QueueNode));
+    if (newQueueNode == NULL) {
+        printf("Error: Cannot allocate memory for queue node.\n");
+        exit(1);
+    }
+    newQueueNode->treeNode = treeNode;
+    newQueueNode->next = NULL;
+    if (isEmptyQueue(queue)) {
+        queue->front = newQueueNode;
+        queue->rear = newQueueNode;
+    } else {
+        queue->rear->next = newQueueNode;
+        queue->rear = newQueueNode;
+    }
+}
+// 出队
+TreeNode* dequeue(Queue* queue) {
+    if (isEmptyQueue(queue)) {
+        printf("Error: Queue is empty.\n");
+        exit(1);
+    }
+    QueueNode* frontQueueNode = queue->front;
+    TreeNode* treeNode = frontQueueNode->treeNode;
+    queue->front = frontQueueNode->next;
+    if (queue->front == NULL) {
+        queue->rear = NULL;
+    }
+    free(frontQueueNode);
+    return treeNode;
+}
+// 层序遍历二叉树
+void levelOrderTraversal(TreeNode* root) {
+    if (root == NULL) {
+        return;
+    }
+    Queue* queue = createQueue();
+    enqueue(queue, root);
+    while (!isEmptyQueue(queue)) {
+        TreeNode* currentNode = dequeue(queue);
+        printf("%d ", currentNode->data);
+        if (currentNode->left != NULL) {
+            enqueue(queue, currentNode->left);
+        }
+        if (currentNode->right != NULL) {
+            enqueue(queue, currentNode->right);
+        }
+    }
+    printf("\n");
+    free(queue);
+}
+// 释放二叉树空间
+void freeBinaryTree(TreeNode* root) {
+    if (root == NULL) {
+        return;
+    }
+    // 先释放左右子树，再释放根节点
+    freeBinaryTree(root->left);
+    freeBinaryTree(root->right);
+    free(root);
+}
+
+// 验证层序遍历函数
+void testLevelOrderTraversal() {
+    TreeNode* root = createNode(1);
+    TreeNode* node2 = createNode(2);
+    TreeNode* node3 = createNode(3);
+    TreeNode* node4 = createNode(4);
+    TreeNode* node5 = createNode(5);
+    root->left = node2;
+    root->right = node3;
+    node2->left = node4;
+    node2->right = node5;
+    printf("Level Order Traversal: ");
+    levelOrderTraversal(root);
+    freeBinaryTree(root);
+}
+
+// int main() {
+    // testLevelOrderTraversal();
+    // return 0;
+// }
