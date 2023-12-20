@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <stdlib.h>
+// 二叉树节点结构
+typedef struct Node {
+    int data;                   // 节点数据
+    struct Node* left;          // 左子节点指针
+    struct Node* right;         // 右子节点指针
+} TreeNode;
+// 创建新节点
+TreeNode* createNode(int data) {
+    TreeNode* newNode = (TreeNode*)malloc(sizeof(TreeNode));
+    if (newNode == NULL) {
+        printf("Error: Cannot allocate memory for new node.\n");
+        exit(1);
+    }
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+// 释放二叉树空间
+void freeBinaryTree(TreeNode* root) {
+    if (root == NULL) {
+        return;
+    }
+    // 先释放左右子树，再释放根节点
+    freeBinaryTree(root->left);
+    freeBinaryTree(root->right);
+    free(root);
+}
+// 后序遍历二叉树
+void postorderTraversal(TreeNode* root) {
+    if (root == NULL) {
+        return;
+    }
+    postorderTraversal(root->left);     // 先递归遍历左子树
+    postorderTraversal(root->right);    // 再递归遍历右子树
+    printf("%d ", root->data);           // 最后访问根节点
+}
+// 验证后序遍历函数
+void testPostorderTraversal() {
+    TreeNode* root = createNode(1);
+    TreeNode* node2 = createNode(2);
+    TreeNode* node3 = createNode(3);
+    TreeNode* node4 = createNode(4);
+    TreeNode* node5 = createNode(5);
+    root->left = node2;
+    root->right = node3;
+    node2->left = node4;
+    node2->right = node5;
+    printf("Postorder Traversal: ");
+    postorderTraversal(root);
+    printf("\n");
+    freeBinaryTree(root);
+}
+// int main() {
+    // testPostorderTraversal();
+    // return 0;
+// }
